@@ -8,7 +8,7 @@
 using namespace std;
 using namespace std::chrono;
 
-int generator() // functie care genereaza numerele
+int generatornr() // functie care genereaza numerele
 {
     int randomn, bit;
     for(int i = 0; i < 16; i++)
@@ -70,7 +70,7 @@ void radixsort( vector <int> &v, int n)
     auto stop1 = high_resolution_clock::now();
     auto duration1 = duration_cast<microseconds>(stop1 - start1);
     if(test_Sort(v, n) == 1)
-        cout << "RadixSort: CORECT- Timpul de rulare: "<<duration1.count()/1000000.00000000000000 <<" secunde"<< endl;
+        cout << "RadixSort: CORECT- Timp de rulare: "<<duration1.count()<<" secunde"<< endl;
     else
         cout << "radixsort nu a sortat bine"<<endl;
 }
@@ -94,10 +94,10 @@ void merge(vector <int> & v, int low, int m, int high)
     k = low;
     while (i < n1 && j < n2)
     {
-        if (L[i] <= R[j])       //mergesort ul are la baza divide et impera si interclasare
-        {                      //dupa ce impartim vectorul in jumatati pana ce ajungem la
-            v[k] = L[i];      //2 elemente, le comparam si le punem in ordine
-            i++;             //urmand sa facem interclasare cu elementele ramase si ordonate 2 cate 2
+        if (L[i] <= R[j])
+        {
+            v[k] = L[i];
+            i++;
         }
         else
         {
@@ -128,17 +128,18 @@ void mergeSort(vector <int> & v, int low, int high) // n = 10^7 maxx = 10^8
     {
         long long m = low+(high-low)/2;
 
-        mergeSort(v, low, m);             //aici apelam functiile incat sa
-        mergeSort(v, m+1, high);         //injumatatim vectorul
+        mergeSort(v, low, m);
+        mergeSort(v, m+1, high);
 
         merge(v, low, m, high);
     }
 }
+
 // Shell sort
 void shellSort(int n, vector <int> & v)
 {
 
-    // Rearrange elements at each n/2, n/4, n/8, ... intervals
+    // Rearanjam elem la fiecare n/2, n/4, n/8...
     for (int interval = n / 2; interval > 0; interval /= 2) {
         for (int i = interval; i < n; i += 1) {
             int temp = v[i];
@@ -151,9 +152,9 @@ void shellSort(int n, vector <int> & v)
     }
 }
 
-void bubblesort(int n, vector<int> & v) //O(n^2) functioneaza doar daca n<10^6
+void bubblesort(int n, vector<int> & v)
 {
-    auto start0 = high_resolution_clock::now(); //pornim "cronometrul"
+    auto start = high_resolution_clock::now();
     int i, ok;
     do
     {
@@ -170,10 +171,10 @@ void bubblesort(int n, vector<int> & v) //O(n^2) functioneaza doar daca n<10^6
     }
     while(ok == 0);
 
-    auto stop0 = high_resolution_clock::now(); // oprim "cronometrul"
-    auto duration0 = duration_cast<microseconds>(stop0 - start0); // calculam diferenta dintre inceput si final
+    auto stop = high_resolution_clock::now();
+    auto duration = duration_cast<microseconds>(stop - start);
     if(test_Sort(v, n) == 1)
-        cout << "Bubblesort: CORECT- Timpul de rulare: "<<duration0.count()/1000000.00000000000000<<" secunde "<<'\n';
+        cout << "Bubblesort: CORECT- Timp de rulare: "<<duration.count()<<" secunde "<<'\n';
     else
         cout << "Bubblesort nu a sortat bine"<<endl;
 }
@@ -218,45 +219,55 @@ void quicksort(int p, int u, vector<int> &v)
     }
 }
 
+void afisss( vector <int> v)
+{
+    for (int i = 0; i< v.size(); i++)
+        cout<<v[i]<<" ";
+}
+
 int main()
 {
     ifstream f("intrare.txt");
-    int N, n, Max, i, j, x;
-    vector<int> v;
-    vector<int> c;
-    f >> N;
+    int n, Mx, x, N;
 
-    for (i = 0; i < N; i++)
-    {
-        f >> n >> Max;
-        srand(time(NULL));
-        v.push_back(Max);
-        for (int i = 1; i<N; i++)
+    f>>N;
+    for (int k=1;k<=N;k++)
         {
-            x = generator();
-            if (x<Max && x>=0)
+        f>>n>>Mx;
+        vector<int> v,c; //vector cu N numere generate random
+        srand(time(NULL));
+        v.push_back(Mx);
+        cout<<v[0];
+        for (int i = 1; i < n; i++)
+            {
+                //cout<<"9";
+            x = generatornr();
+            if (x <= Mx && x >= 0)
+
                 v.push_back(x);
+                //cout<<x<<" ";}
+
+               // v.push_back(x);
             else
                 i--;
         }
+        cout<<endl;
+        afisss(v);
 
-        cout <<"Buna";
 
         if (n > 100000000)
-            cout << "RadixSort: Nu exista suficienta memorie pentru a aloca vectorul" << endl;
+            cout << "RadixSort: Nu exista suficienta memorie pentru vector" << endl;
         else
         {
             c.clear();
-            for (int j = 0; j < n; j++)
+        for (int j = 0; j < n; j++)
                 c.push_back(v[j]);
             radixsort(c, n - 1);
         }
 
-        cout<<"Buna";
 
-
-        if (n > 10000000)
-            cout << "MergeSort: Nu exista suficienta memorie pentru a aloca vectorul" << endl;
+/*        if (n > 10000000)
+            cout << "MergeSort: Nu exista suficienta memorie pentru vector" << endl;
         else
         {
             c.clear();
@@ -267,58 +278,61 @@ int main()
             auto stop = high_resolution_clock::now();
             auto duration = duration_cast<microseconds>(stop - start);
             if (test_Sort(c, n) == 1)
-                cout << "MergeSort: CORECT- Timpul de rulare: " << duration.count() / 1000000.00000000000000
+                cout << "MergeSort: CORECT- Timpul de rulare: " << duration.count()
                      << " secunde"
                      << endl;
             else cout << "MergeSort nu a sortat bine\n";
         }
 
+//asta nu merge
 
+*/
         if (n > 10000000)
-            cout << "ShellSort: Nu exista suficienta memorie pentru a aloca vectorul" << endl;
+            cout << "ShellSort: Nu exista suficienta memorie pentru vector" << endl;
         else
         {
             c.clear();
             for (int j = 0; j < n; j++)
                 c.push_back(v[j]);
-            auto start1 = high_resolution_clock::now();
+            auto start = high_resolution_clock::now();
             shellSort(n, c);
-            auto stop1 = high_resolution_clock::now();
-            auto duration1 = duration_cast<microseconds>(stop1 - start1);
+            auto stop = high_resolution_clock::now();
+            auto duration = duration_cast<microseconds>(stop - start);
             if (test_Sort(c, n) == 1)
-                cout << "ShellSort: CORECT- Timpul de rulare: " << duration1.count() / 1000000.00000000000000
+                cout << "ShellSort: CORECT- Timp de rulare: " << duration.count()
                      << " secunde"
                      << endl;
             else cout << "ShellSort nu a sortat bine\n";
         }
 
         if (n > 10000)
-            cout << "BubbleSort: Nu exista suficienta memorie pentru a aloca vectorul" << endl;
+            cout << "BubbleSort: Nu exista suficienta memorie pentru vector" << endl;
         else
         {
             c.clear();
-            for (j = 0; j < n; j++)
+            for (int j = 0; j < n; j++)
                 c.push_back(v[j]);
             bubblesort(n, v);
         }
 
         if(n > 100000000)
-            cout<<"QuickSort cu mediana: Nu exista suficienta memorie pentru a aloca vectorul"<<endl;
+            cout<<"QuickSort mediana: Nu exista suficienta memorie pentru vector"<<endl;
         else
         { c.clear();
             for (int j = 0; j < n; j++)
                 c.push_back(v[j]);
-            auto start2 = high_resolution_clock::now();
+            auto start = high_resolution_clock::now();
             quicksort(0, n, c);
-            auto stop2 = high_resolution_clock::now();
-            auto duration2 = duration_cast<microseconds>(stop2 - start2);
+            auto stop = high_resolution_clock::now();
+            auto duration = duration_cast<microseconds>(stop - start);
             if(test_Sort(c,n)==1)
-                cout<<"QuickSort cu mediana: CORECT- Timpul de rulare: "<<duration2.count()/1000000.00000000000000 <<" secunde"<< endl;
-            else cout<<"Quicksort cu mediana nu a sortat bine";
+                cout<<"QuickSort mediana: CORECT- Timp de rulare: "<<duration.count() <<" secunde"<< endl;
+            else cout<<"Quicksort mediana nu a sortat bine";
         }
 
         c.clear();
         v.clear();
+
     }
 
     return 0;
